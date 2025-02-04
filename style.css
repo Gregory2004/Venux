@@ -1,3 +1,4 @@
+
 html {
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
@@ -7,6 +8,9 @@ html {
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  body *{
+    font-family: 'Inter', sans-serif;
   }
 html, body {
     height: 100%;
@@ -360,10 +364,20 @@ table th,td {
 
 
 /* PRODUCT PAGE */
+.product-photo-content h5 {
+    font-size: 16px;
+  }
+  .product-photo-content h4 {
+    font-size: 18px;
+  }
+  .product-photo-content h1 {
+    font-size: 29px;
+    font-weight: 900;
+  }
 .line-container {
     text-align: center;
     position: relative;
-    margin: 20px 0;
+    margin: 0 0 20px;
   }
   .line-container::before,
   .line-container::after {
@@ -407,29 +421,258 @@ table th,td {
     font-weight: 800;
     transform: translate(0,40%);
   }
+  .prices {
+    display: flex;
+    align-items: center; /* Центрирование всех элементов по вертикали */
+    gap: 10px; /* Расстояние между элементами */
+    font-family: 'Inter', sans-serif; /* Шрифт */
+  }
+  
+  .current-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+  }
+  
+  .dashed-price {
+    font-size: 18px;
+    text-decoration: line-through;
+    color: gray;
+  }
+  
+  .discount-badge {
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 5px;
+    display: inline-block; /* Убедиться, что это выглядит как значок */
+  }
+    .product-photo-content{
+        padding-top: 90px;
+    }
+    
+.radio-button {
+    padding-left: 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    height: 80px;
+    background-color: #f8f8f8;
+    margin-bottom: 10px;
+    position: relative;
+    font-size: 14px
+}
+.mihat{
+    padding-left: 20px;
+}
+.radio-button input[type="radio"] {
+    position: absolute;
+    top: 32px;
+    margin: 0;
+    width: 10px;
+    outline: none;
+    height: 16px;
+    border: 1px solid #777;
+    border-radius: 50%;
+    cursor: pointer
+}
+
+.radio-button input[type="radio"]:checked {
+    background-color: #e5e5e5
+}
+
+.radio-button input[type="radio"]:checked::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #000
+}
+
+.radio-button:hover {
+    border: 2px solid #000;
+    background-color: #d9d9d9
+}
+
+.radio-button:has(input[type="radio"]:checked) {
+    background-color: #e5e5e5;
+    border: 3px solid #000
+}
 
 
+.price {
+    font-weight: 700;
+    white-space: nowrap
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 12px;
+    white-space: nowrap
+}
+
+.pieceofshit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px
+}
+.popular {
+    border-color: #ddd
+}
+
+.popular-label {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background-color: #ffb6c1;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    transform: rotate(5deg);
+    box-shadow: 4px 5px 5px rgb(0 0 0 / .2)
+}
+
+.popular-label .star {
+    color: gold;
+    font-size: 14px
+}
+.additional-text {
+    margin-top: 10px;
+    font-size: 10px;
+    white-space: nowrap
+}
+.eli {
+    font-weight: 700
+}
+.mihat {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px
+}
   @media (min-width: 992px) and (max-width: 1199px) { 
+    .line-text{
+        font-size: 12px;
+    }
+    .product-photo-content{
+        padding-top: 60px;
+    }
     .product-photo-content h1 {
-      font-size: 28px; /* Пример размера шрифта */
+      font-size: 28px;
     }
     .product-photo-content h4 {
         font-size: 16px;
       }
+      .sale{
+        margin-top: -10px;
+      }
       .product-photo-content h5 {
-        font-size: 16px;
+        font-size: 14px;
+      }
+      .current-price{
+        font-size: 18px;
+      }
+      .dashed-price{
+        font-size: 14px;
+      }
+      .discount-badge{
+        font-size: 10px;
       }
   }
   @media (min-width: 768px) and (max-width: 991px) { 
+    .line-text{
+        font-size: 12px;
+    }
+    .product-photo-content{
+        padding-top: 30px;
+    }
+    
     .product-photo-content h1 {
       font-size: 18px;
-      font-weight: 700; /* Пример размера шрифта */
+      font-weight: 700;
     }
     .product-photo-content h5 {
-        font-size: 10px; /* Пример размера шрифта */
+        font-size: 10px;
       }
       .product-photo-content h4 {
-        font-size: 12px; /* Пример размера шрифта */
+        font-size: 12px;
+      }
+      .sale{
+        margin-top: -10px;
+      }
+      .current-price{
+        font-size: 16px;
+      }
+      .dashed-price{
+        font-size: 12px;
+      }
+      .discount-badge{
+        font-size: 8px;
       }
   }
-  
+  @media (min-width: 576px) and (max-width: 767px){
+    .line-container{
+        margin-top: -7px;
+        z-index: 0;
+    }
+    .line-text{
+        font-size:10px;
+    }
+    .product-photo-content{
+        padding-top: 20px;
+    }
+    .product-photo-content h1 {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .product-photo-content h5 {
+          font-size: 10px;
+        }
+        .product-photo-content h4 {
+          font-size: 12px;
+        }
+        .prices{
+            font-size: 10px;
+        }
+        .dashed-price{
+            font-size: 12px;
+        }
+        .sale{
+            position: relative;
+            z-index: 1;
+            max-height: 36px;
+            margin-top: -10px;
+          }
+          .sale p{
+            font-size: 11px;
+          }
+          .sale .fw-bold{
+            margin-top: 3px;
+            margin-bottom: 10px;
+          }
+          .current-price{
+            font-size: 14px;
+          }
+          .dashed-price{
+            font-size: 10px;
+          }
+          .discount-badge{
+            font-size: 6px;
+          }
+  }
