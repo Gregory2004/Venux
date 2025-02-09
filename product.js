@@ -81,7 +81,6 @@ function addToCart() {
       if (fullItems) fullItems.style.display = 'none';
       console.error('Нет выбранных значений.');
     } else {
-      basketQuantityPlus(selectedValues.length);
       if (zeroItems) zeroItems.style.display = 'none';
       if (fullItems) fullItems.style.display = 'block';
       openClose();
@@ -97,13 +96,7 @@ function addToCart() {
 }
 
 // Функция для увеличения количества товаров в корзине
-function basketQuantityPlus(num) {
-  const quantity = document.querySelector('.items-quantity');
-  basketQuantity += num;
-  if (quantity) {
-    quantity.textContent = basketQuantity + " items";
-  }
-}
+
 
 // Функция для открытия/закрытия сайдбара (корзины)
 function openClose() {
@@ -174,17 +167,20 @@ const packageToPush = (function () {
   let groupedElements = {};
   // Переменная для отслеживания, сколько элементов корзины уже обработано
   let processedItemsCount = 0;
-
+  let j = 0
   // Рекурсивно обрабатываем массив для группировки по ключу (на основе JSON-представления)
   function processArray(arr) {
+    
     for (let element of arr) {
       if (Array.isArray(element)) {
         processArray(element);
       } else {
         const key = JSON.stringify(arr);
         if (!groupedElements[key]) {
+            j += 1
           groupedElements[key] = { value: arr, count: 1 };
         } else {
+            j += 1
           groupedElements[key].count += 1;
         }
         break; // После обработки первого примитивного элемента выходим из цикла
@@ -205,7 +201,6 @@ const packageToPush = (function () {
       console.error('Элемент .item не найден');
       return;
     }
-
     // Добавляем стили для input[type=number], если они ещё не добавлены
     if (!document.getElementById('customStyles')) {
       const style = document.createElement('style');
@@ -225,83 +220,91 @@ const packageToPush = (function () {
     }
 
     // Обновляем существующие элементы или создаём новые для каждой группы
-    Object.entries(groupedElements).forEach(([key, { value, count }]) => {
-      // Проверяем, существует ли уже элемент с данным ключом
-      let existingDiv = Array.from(item.children).find(
-        child => child.dataset.key === key
-      );
-
-      if (existingDiv) {
-        // Если элемент существует, обновляем значение счётчика
-        const counterInput = existingDiv.querySelector('input');
-        if (counterInput) {
-          counterInput.value = count;
-        }
-      } else {
-        // Создаём новый элемент для группы
-        const newDiv = document.createElement('div');
-        newDiv.dataset.key = key;
-
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = `${value.join(' / ')}: `;
-        titleSpan.style.marginRight = '8px';
-
-        const counterContainer = document.createElement('div');
-        Object.assign(counterContainer.style, {
-          display: 'flex',
-          alignItems: 'center',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          overflow: 'hidden',
-          width: '150px',
-          marginBottom: '10px'
-        });
-
-        const counterInput = document.createElement('input');
-        counterInput.type = 'number';
+    // Обновляем существующие элементы или создаём новые для каждой группы
+Object.entries(groupedElements).forEach(([key, { value, count }]) => {
+    // Проверяем, существует ли уже элемент с данным ключом
+    let existingDiv = Array.from(item.children).find(
+      child => child.dataset.key === key
+    );
+  
+    if (existingDiv) {
+      // Если элемент существует, обновляем значение счётчика
+      const counterInput = existingDiv.querySelector('input');
+      if (counterInput) {
         counterInput.value = count;
-        counterInput.min = 1;
-        Object.assign(counterInput.style, {
-          width: '40px',
-          textAlign: 'center',
-          border: 'none',
-          outline: 'none'
-        });
-
-        // Создаём кнопки уменьшения и увеличения
-        const decrementButton = createButton('-');
-        const incrementButton = createButton('+');
-
-        decrementButton.addEventListener('click', () => {
-          const currentCount = +counterInput.value;
-          if (currentCount > 1) {
-            groupedElements[key].count = currentCount - 1;
-            counterInput.value = groupedElements[key].count;
-          }
-        });
-
-        incrementButton.addEventListener('click', () => {
-          const currentCount = +counterInput.value;
-          groupedElements[key].count = currentCount + 1;
-          counterInput.value = groupedElements[key].count;
-        });
-
-        counterInput.addEventListener('change', () => {
-          const inputValue = parseInt(counterInput.value, 10);
-          if (!isNaN(inputValue) && inputValue >= 1) {
-            groupedElements[key].count = inputValue;
-          } else {
-            counterInput.value = groupedElements[key].count;
-          }
-        });
-
-        counterContainer.append(decrementButton, counterInput, incrementButton);
-        newDiv.appendChild(titleSpan);
-        newDiv.appendChild(counterContainer);
-        item.appendChild(newDiv);
       }
-    });
+    } else {
+      // Создаём новый элемент для группы
+      const newDiv = document.createElement('div');
+      newDiv.dataset.key = key;
+  
+      const titleSpan = document.createElement('span');
+      titleSpan.textContent = `${value.join(' / ')}: `;
+      titleSpan.style.marginRight = '8px';
+  
+      const counterContainer = document.createElement('div');
+      Object.assign(counterContainer.style, {
+        display: 'flex',
+        alignItems: 'center',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        overflow: 'hidden',
+        width: '150px',
+        marginBottom: '10px'
+      });
+  
+      const counterInput = document.createElement('input');
+      counterInput.type = 'number';
+      counterInput.value = count;
+      counterInput.min = 1;
+      Object.assign(counterInput.style, {
+        width: '40px',
+        textAlign: 'center',
+        border: 'none',
+        outline: 'none'
+      });
+  
+      // Создаём кнопки уменьшения и увеличения
+      const decrementButton = createButton('-');
+      const incrementButton = createButton('+');
+  
+      decrementButton.addEventListener('click', () => {
+        const currentCount = +counterInput.value;
+        if (currentCount > 1) {
+          groupedElements[key].count = currentCount - 1;
+          j -= 1
+          itemsQuantity.textContent = j + " items"
+          counterInput.value = groupedElements[key].count;
+        }
+      });
+  
+      incrementButton.addEventListener('click', () => {
+        const currentCount = +counterInput.value;
+        j += 1
+        groupedElements[key].count = currentCount + 1;
+        itemsQuantity.textContent = j + " items"
+        counterInput.value = groupedElements[key].count;
+      });
+  
+      counterInput.addEventListener('change', () => {
+        const inputValue = parseInt(counterInput.value, 10);
+        if (!isNaN(inputValue) && inputValue >= 1) {
+          groupedElements[key].count = inputValue;
+        } else {
+          counterInput.value = groupedElements[key].count;
+        }
+      });
+  
+      counterContainer.append(decrementButton, counterInput, incrementButton);
+      newDiv.appendChild(titleSpan);
+      newDiv.appendChild(counterContainer);
+      item.appendChild(newDiv);
+    }
+  });
+  let itemsQuantity = document.querySelector('.items-quantity')
+  itemsQuantity.textContent = j + " items"
   };
+  
 })();
 
 // Инициализация
