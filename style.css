@@ -32,6 +32,99 @@ body {
     margin: 0 auto;
 }
 
+/* SIDEBAR */
+.grey {
+    opacity: 0; /* Прозрачный слой */
+    visibility: hidden; /* Скрыть элемент */
+    background-color: rgba(94, 94, 94, 0.444);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 9;
+    transition: opacity 0.7s ease, visibility 0.7s ease; /* Анимация прозрачности и видимости */
+}
+
+.grey.greyed {
+    opacity: 1; /* Показываем слой */
+    visibility: visible; /* Делаем видимым */
+}
+.sidebar{
+    position: fixed;
+    top: 0; 
+    right: 0;
+    height: 100%;
+    width: 350px;
+    background-color: rgb(255, 255, 255);
+    transform: translateX(100%);
+    z-index: 10;
+    transition: transform 0.3s ease-in-out;
+}
+.open{
+    transform: translateX(0);
+}
+.close-button {
+    position: absolute;
+    right: 10px;
+    top: 20px;
+}
+.close-button button {
+    font-size: 30px;
+    border: none;
+    background: none;
+}
+
+.full-basket{
+    display: flex;
+    flex-direction: column;
+}
+.cart-items{
+    padding: 15px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    color: black;
+}
+.cart-items h2{
+    font-family: 'Roboto', sans-serif !important;
+    font-weight: 900;
+    margin: 0;
+    font-size: 30px;
+}
+.cart-items h2 span{
+    margin-right: 5px;
+}
+.cart-items h2 span *{
+    padding: 10px
+}
+.zero-basket{
+    display: none;
+    height: 100%;
+}
+.zero-item {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.zero-item h1{
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 25px;
+}
+.zero-item button {
+    background-color: black;
+    color: white;
+    border: 0;
+    border-radius: 10px;
+    font-weight: bold;
+    padding: 10px 25px;
+    transform: scale(100%);
+    transition: transform 0.1s;
+}
+.zero-item button:hover{
+    transform: scale(103%);
+}
 /* HEADER */
 
 .hero {
