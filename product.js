@@ -1,8 +1,10 @@
 // Глобальные переменные и функции, не связанные с groupedElements
-
 let selectedValues = [];
-let basketQuantity = 0;
+let Quantities = 0
+// Глобальный массив корзины – загружаем из localStorage при инициализации
+let basketArr = loadCart();
 
+// Функция открытия селекторов, привязанная к радио-кнопкам
 function selectorsOpen() {
   const radioButtons = document.querySelectorAll('input[name="product_quantity"]');
 
@@ -24,6 +26,7 @@ function selectorsOpen() {
         return;
       }
 
+      // Показываем селекторы, связанные с выбранной радио-кнопкой
       const relatedSelectors = parentLabel.querySelectorAll('.selector');
 
       // Очищаем массив выбранных значений
@@ -31,7 +34,7 @@ function selectorsOpen() {
 
       let index = 0;
       relatedSelectors.forEach(choosenSelector => {
-        choosenSelector.style.display = 'block'; // Показываем селекторы
+        choosenSelector.style.display = 'block'; // Показываем селектор
 
         const selects = choosenSelector.querySelectorAll('select');
         selects.forEach(select => {
@@ -43,8 +46,8 @@ function selectorsOpen() {
           // Сохраняем текущее значение select
           selectedValues[index].push(select.value);
 
-          // Привязываем обработчик изменения, чтобы обновлять selectedValues
-          // Используем свойство onchange для предотвращения накопления обработчиков
+          // Привязываем обработчик изменения, чтобы обновлять selectedValues.
+          // Используем onchange для предотвращения накопления обработчиков.
           select.onchange = updateSelectedValues.bind(null, selects, index);
         });
         index++;
@@ -70,33 +73,39 @@ function addToCart() {
   }
   const zeroItems = document.querySelector('.zero-basket');
   const fullItems = document.querySelector('.full-basket');
-  
-  // Массив корзины накапливает все выбранные значения
-  let basketArr = [];
 
   addToCartButton.addEventListener('click', function () {
-    if (selectedValues.length === 0) {
+    if (Quantities == 0) {
+      // Если ничего не выбрано, открываем сайдбар и показываем пустую корзину
       openClose();
       if (zeroItems) zeroItems.style.display = 'block';
       if (fullItems) fullItems.style.display = 'none';
       console.error('Нет выбранных значений.');
     } else {
+      // Показываем заполненную корзину
       if (zeroItems) zeroItems.style.display = 'none';
       if (fullItems) fullItems.style.display = 'block';
       openClose();
-      
-      // Создаём копию массива, чтобы не сохранить ссылку на исходный массив
+
+      // Создаём глубокую копию выбранных значений
       const selectedCopy = JSON.parse(JSON.stringify(selectedValues));
-      basketArr.push(selectedCopy); // Добавляем копию в корзину
+      basketArr.push(selectedCopy); // Добавляем копию в глобальную корзину
+      saveCart(basketArr);
     }
-    // Передаём всю корзину в функцию группировки,
+    // Передаём всю корзину в функцию группировки;
     // внутри неё будут обработаны только новые элементы
     packageToPush(basketArr);
   });
 }
 
-// Функция для увеличения количества товаров в корзине
-
+// Сохранение и загрузка корзины в localStorage
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+function loadCart() {
+  const savedCart = localStorage.getItem("cart");
+  return savedCart ? JSON.parse(savedCart) : [];
+}
 
 // Функция для открытия/закрытия сайдбара (корзины)
 function openClose() {
@@ -159,28 +168,29 @@ function createButton(text, onClick) {
 }
 
 // -------------------------
-// packageToPush в виде замыкания с обработкой только новых элементов
+// packageToPush – функция-замыкание для группировки добавленных товаров,
+// обрабатывающая только новые элементы корзины
 // -------------------------
-
 const packageToPush = (function () {
-  // Локальная переменная для хранения сгруппированных элементов
+  // Локальный объект для хранения сгруппированных элементов
   let groupedElements = {};
-  // Переменная для отслеживания, сколько элементов корзины уже обработано
+  // Счётчик обработанных элементов корзины
   let processedItemsCount = 0;
-  let j = 0
-  // Рекурсивно обрабатываем массив для группировки по ключу (на основе JSON-представления)
+  // Переменная для подсчёта общего количества товаров
+  let totalItemsCount = 0;
+
+  // Рекурсивная функция для обработки массива и группировки по ключу (на основе JSON-представления)
   function processArray(arr) {
-    
     for (let element of arr) {
       if (Array.isArray(element)) {
         processArray(element);
       } else {
         const key = JSON.stringify(arr);
         if (!groupedElements[key]) {
-            j += 1
+          totalItemsCount += 1;
           groupedElements[key] = { value: arr, count: 1 };
         } else {
-            j += 1
+          totalItemsCount += 1;
           groupedElements[key].count += 1;
         }
         break; // После обработки первого примитивного элемента выходим из цикла
@@ -188,9 +198,16 @@ const packageToPush = (function () {
     }
   }
 
-  // Возвращаем функцию, которая вызывается извне, при этом groupedElements и processedItemsCount сохраняются в замыкании
+  // Возвращаемая функция для группировки и отрисовки новых элементов
   return function (basketArr) {
-    // Обрабатываем только новые элементы из корзины (от processedItemsCount до basketArr.length)
+    // Получаем элемент для отображения общего количества товаров
+    const itemsQuantity = document.querySelector('.items-quantity');
+    if (!itemsQuantity) {
+      console.error('Элемент .items-quantity не найден');
+      return;
+    }
+
+    // Обрабатываем только новые элементы из корзины
     for (let i = processedItemsCount; i < basketArr.length; i++) {
       processArray(basketArr[i]);
     }
@@ -201,6 +218,7 @@ const packageToPush = (function () {
       console.error('Элемент .item не найден');
       return;
     }
+
     // Добавляем стили для input[type=number], если они ещё не добавлены
     if (!document.getElementById('customStyles')) {
       const style = document.createElement('style');
@@ -220,94 +238,104 @@ const packageToPush = (function () {
     }
 
     // Обновляем существующие элементы или создаём новые для каждой группы
-    // Обновляем существующие элементы или создаём новые для каждой группы
-Object.entries(groupedElements).forEach(([key, { value, count }]) => {
-    // Проверяем, существует ли уже элемент с данным ключом
-    let existingDiv = Array.from(item.children).find(
-      child => child.dataset.key === key
-    );
-  
-    if (existingDiv) {
-      // Если элемент существует, обновляем значение счётчика
-      const counterInput = existingDiv.querySelector('input');
-      if (counterInput) {
+    Object.entries(groupedElements).forEach(([key, { value, count }]) => {
+      // Ищем уже созданный элемент для данной группы
+      let existingDiv = Array.from(item.children).find(
+        child => child.dataset.key === key
+      );
+
+      if (existingDiv) {
+        // Если элемент существует, обновляем значение счётчика
+        const counterInput = existingDiv.querySelector('input');
+        if (counterInput) {
+          counterInput.value = count;
+        }
+      } else {
+        // Создаём новый элемент для группы
+        const newDiv = document.createElement('div');
+        newDiv.dataset.key = key;
+
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = `${value.join(' / ')}: `;
+        titleSpan.style.marginRight = '8px';
+
+        const counterContainer = document.createElement('div');
+        Object.assign(counterContainer.style, {
+          display: 'flex',
+          alignItems: 'center',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          overflow: 'hidden',
+          width: '150px',
+          marginBottom: '10px'
+        });
+
+        const counterInput = document.createElement('input');
+        counterInput.type = 'number';
         counterInput.value = count;
+        counterInput.min = 1;
+        Object.assign(counterInput.style, {
+          width: '40px',
+          textAlign: 'center',
+          border: 'none',
+          outline: 'none'
+        });
+
+        // Создаём кнопки уменьшения и увеличения
+        const decrementButton = createButton('-');
+        const incrementButton = createButton('+');
+
+        decrementButton.addEventListener('click', () => {
+          const currentCount = +counterInput.value;
+          if (currentCount > 1) {
+            groupedElements[key].count = currentCount - 1;
+            totalItemsCount -= 1;
+            itemsQuantity.textContent = totalItemsCount + " items";
+            counterInput.value = groupedElements[key].count;
+          }
+        });
+
+        incrementButton.addEventListener('click', () => {
+          const currentCount = +counterInput.value;
+          groupedElements[key].count = currentCount + 1;
+          totalItemsCount += 1;
+          itemsQuantity.textContent = totalItemsCount + " items";
+          counterInput.value = groupedElements[key].count;
+        });
+
+        counterInput.addEventListener('change', () => {
+          const inputValue = parseInt(counterInput.value, 10);
+          if (!isNaN(inputValue) && inputValue >= 1) {
+            // Обновляем общий счёт, вычислив разницу между новым и старым значением
+            totalItemsCount += (inputValue - groupedElements[key].count);
+            groupedElements[key].count = inputValue;
+            itemsQuantity.textContent = totalItemsCount + " items";
+          } else {
+            counterInput.value = groupedElements[key].count;
+          }
+        });
+
+        counterContainer.append(decrementButton, counterInput, incrementButton);
+        newDiv.appendChild(titleSpan);
+        newDiv.appendChild(counterContainer);
+        item.appendChild(newDiv);
       }
-    } else {
-      // Создаём новый элемент для группы
-      const newDiv = document.createElement('div');
-      newDiv.dataset.key = key;
-  
-      const titleSpan = document.createElement('span');
-      titleSpan.textContent = `${value.join(' / ')}: `;
-      titleSpan.style.marginRight = '8px';
-  
-      const counterContainer = document.createElement('div');
-      Object.assign(counterContainer.style, {
-        display: 'flex',
-        alignItems: 'center',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        width: '150px',
-        marginBottom: '10px'
-      });
-  
-      const counterInput = document.createElement('input');
-      counterInput.type = 'number';
-      counterInput.value = count;
-      counterInput.min = 1;
-      Object.assign(counterInput.style, {
-        width: '40px',
-        textAlign: 'center',
-        border: 'none',
-        outline: 'none'
-      });
-  
-      // Создаём кнопки уменьшения и увеличения
-      const decrementButton = createButton('-');
-      const incrementButton = createButton('+');
-  
-      decrementButton.addEventListener('click', () => {
-        const currentCount = +counterInput.value;
-        if (currentCount > 1) {
-          groupedElements[key].count = currentCount - 1;
-          j -= 1
-          itemsQuantity.textContent = j + " items"
-          counterInput.value = groupedElements[key].count;
-        }
-      });
-  
-      incrementButton.addEventListener('click', () => {
-        const currentCount = +counterInput.value;
-        j += 1
-        groupedElements[key].count = currentCount + 1;
-        itemsQuantity.textContent = j + " items"
-        counterInput.value = groupedElements[key].count;
-      });
-  
-      counterInput.addEventListener('change', () => {
-        const inputValue = parseInt(counterInput.value, 10);
-        if (!isNaN(inputValue) && inputValue >= 1) {
-          groupedElements[key].count = inputValue;
-        } else {
-          counterInput.value = groupedElements[key].count;
-        }
-      });
-  
-      counterContainer.append(decrementButton, counterInput, incrementButton);
-      newDiv.appendChild(titleSpan);
-      newDiv.appendChild(counterContainer);
-      item.appendChild(newDiv);
-    }
-  });
-  let itemsQuantity = document.querySelector('.items-quantity')
-  itemsQuantity.textContent = j + " items"
+    });
+
+    // Обновляем отображение общего количества товаров
+    itemsQuantity.textContent = totalItemsCount + " items";
+    Quantities = totalItemsCount
+  console.log(Quantities)
   };
-  
 })();
 
-// Инициализация
+// При загрузке страницы – группируем ранее сохранённые товары
+window.addEventListener('load', function () {
+  packageToPush(basketArr);
+  console.log(selectedValues)
+});
+
+// Инициализация обработчиков
 openCloseSidebar();
 selectorsOpen();
 addToCart();
