@@ -75,7 +75,7 @@ function addToCart() {
   const fullItems = document.querySelector('.full-basket');
 
   addToCartButton.addEventListener('click', function () {
-    if (Quantities == 0) {
+    if (Quantities == 0 || selectedValues.length == 0) {
       // Если ничего не выбрано, открываем сайдбар и показываем пустую корзину
       openClose();
       if (zeroItems) zeroItems.style.display = 'block';
